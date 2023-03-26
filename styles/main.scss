@@ -1,0 +1,27 @@
+body {
+   margin: 0 auto;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.container {
+   border: 1px solid black;
+   width: 1200px;
+   height: 1000px;
+   position: relative;
+
+   //    background: rgb(2, 0, 36);
+   //    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(95, 163, 182, 1) 47%, rgba(0, 212, 255, 1) 100%);
+
+}
+
+.patron {
+   background-size: cover;
+   background-repeat: no-repeat;
+   width: 200px;
+   height: 200px;
+   border: 1px solid black;
+   position: absolute;
+   transition: 0.1s;
+}
