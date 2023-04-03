@@ -10,6 +10,10 @@ body {
   width: 1200px;
   height: 1000px;
   position: relative;
+  text-align: center;
+  font-size: 25px;
+  background: rgb(2, 0, 36);
+  background: linear-gradient(90deg, rgb(2, 0, 36) 0%, rgb(66, 199, 29) 59%, rgb(0, 212, 255) 100%);
 }
 
 .patron {

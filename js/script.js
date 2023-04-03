@@ -1,173 +1,91 @@
-//Знаходимо наш контейнер і собак
+//Створення та пошук нашого контейнеру з собаками
 let container = document.querySelector('.container')
-let patron = document.querySelector('.patron')
-let patron2 = document.querySelector('.patron2')
-let patron3 = document.querySelector('.patron3')
+let patron = document.querySelectorAll('.patron')
+patron[0].style.backgroundImage = "url('./img/01.png')";
+patron[1].style.backgroundImage = "url('./img/05.png')";
+patron[2].style.backgroundImage = "url('./img/03.png')";
+patron[3].style.backgroundImage = "url('./img/06.png')";
 
-//Вставляємо картинки бекграундом
-patron.style.backgroundImage = "url('./img/01.png')";
-patron2.style.backgroundImage = "url('./img/02.png')";
-patron3.style.backgroundImage = "url('./img/03.png')";
-
-// Початкова координата першого патрона
-let patronTop = 15
-let patronLeft = 15
-
-//Виставляємо координати нашого першого патрона
-patron.style.top = patronTop + 'px'
-patron.style.left = patronLeft + 'px'
-
-//Виставляємо крок за яким собаки будуть робити рух
-let step = 15;
-
-//Створюємо клік на першого патрона
-patron.addEventListener('click', (ev) => {
-   //Створюємо зміну в яку вкладаємо координати нашого контейнера
-   let guestX = ev.pageX
+//Розмір
+let size = 200;
+//Крок собаки
+let step = 40;
+//Координата собаки
+let doggy = [
+   { top: 20, left: 20 },
+   { top: 200, left: 400 },
+   { top: 300, left: 700 },
+   { top: 700, left: 400 }
+]
+// Рендер собак
+const render = () => {
+   for (let i = 0; i < patron.length; i++) {
+      patron[i].style.top = `${doggy[i].top}px`
+      patron[i].style.left = `${doggy[i].left}px`
+   }
+}
+render()
+// Створення події кліку по всьому контейнеру
+container.addEventListener('click', (ev) => {
+   let guestX = ev.pageX;
    let guestY = ev.pageY
-
-   //Створюємо зміну в яку вкладаємо результат розрахунку координат кліку на малюнку
-   let patronX = guestX - patron.getBoundingClientRect().left;
-   let patronY = guestY - patron.getBoundingClientRect().top;
-   console.log('patronX:', patronX)
-   console.log('patronY:', patronY)
-   // Створюємо зміну в яку вкладаємо ціле число 
-   let patXst = parseInt(patron.style.left)
-   let patYst = parseInt(patron.style.top);
-   console.log('patXst:', patXst)
-   console.log('patYst:', patYst)
-   // Створюємо умови завдяки яким ми ділемо картинку на 4 частини
-   if ((patronX < 100) && (patronY < 100)) {
-      guestX = patYst - step
-      guestY = patXst - step
-      console.log('Верхній лівий кут')
+   if (ev.target === container) {
+      return
    }
-   if ((patronX > 100) && (patronY > 100)) {
-      guestX = patYst + step
-      guestY = patXst + step
-      console.log('Нижній правий кут')
+   for (let i = 0; i < patron.length; i++) {
+      if (ev.target === patron[i]) {
+         let patronX = guestX - patron[i].getBoundingClientRect().left;
+         let patronY = guestY - patron[i].getBoundingClientRect().top;
+         let patXst = parseInt(patron[i].style.left)
+         let patYst = parseInt(patron[i].style.top);
+         // Обробка зіткнень
+         for (let i = 0; i < patron.length; i++) {
+            for (let j = 0; j < patron.length; j++) {
+               if (i !== j) {
+                  let distX = doggy[j].left - doggy[i].left;
+                  let distY = doggy[j].top - doggy[i].top;
+                  let dist = Math.sqrt(distX ** 2 + distY ** 2);
+                  if (dist < size) {
+                     let overlap = size - dist;
+                     let deltaX = (distX / dist) * overlap / 2;
+                     let deltaY = (distY / dist) * overlap / 2;
+                     doggy[i].left -= deltaX;
+                     doggy[i].top -= deltaY;
+                     doggy[j].left += deltaX;
+                     doggy[j].top += deltaY;
+                  }
+               }
+            }
+         }
+         // Цикл обробки переміщення собак
+         for (let i = 0; i < patron.length; i++) {
+            let newlocationX = doggy[i].top;
+            let newlocationY = doggy[i].left;
+            patron[i].style.top = `${newlocationX}px`;
+            patron[i].style.left = `${newlocationY}px`;
+         }
+         if ((patronX < 100) && (patronY < 100)) {
+            doggy[i].top -= step;
+            doggy[i].left -= step;
+         }
+         if ((patronX > 100) && (patronY > 100)) {
+            doggy[i].top += step;
+            doggy[i].left += step;
+         }
+         if ((patronX > 100) && (patronY < 100)) {
+            doggy[i].top -= step;
+            doggy[i].left += step;
+         }
+         if ((patronX < 100) && (patronY > 100)) {
+            doggy[i].top += step;
+            doggy[i].left -= step;
+         }
+      }
+      //Зміна з новими координатами собаки
+      let newlocationX = doggy[i].top;
+      let newlocationY = doggy[i].left;
+      patron[i].style.top = `${newlocationX}px`;
+      patron[i].style.left = `${newlocationY}px`;
    }
-   if ((patronX > 100) && (patronY < 100)) {
-      guestX = patYst - step
-      guestY = patXst + step
-      console.log('Верхній правий кут')
-   }
-   if ((patronX < 100) && (patronY > 100)) {
-      guestX = patYst + step
-      guestY = patXst - step
-      console.log('Нижній лівий кут')
-   }
-   // Створюємо зміну в яку вкладаємо результат розрахунку умов
-   patronTop = guestX
-   patronLeft = guestY
-   // Визначаємо поточну координату собаки
-   patron.style.top = guestX + 'px'
-   patron.style.left = guestY + 'px'
-
 })
-
-// Початкова координата другого патрона
-let patronTop2 = 405
-let patronLeft2 = 405
-
-patron2.style.top = patronTop2 + 'px'
-patron2.style.left = patronLeft2 + 'px'
-// ---------------------------
-
-// Створюємо клік на другого патрона
-patron2.addEventListener('click', (ev) => {
-   let guestX = ev.pageX
-   let guestY = ev.pageY
-   //Створюємо зміну в яку вкладаємо результат розрахунку координат кліку на малюнку
-   let patronX = guestX - patron2.getBoundingClientRect().left;
-   let patronY = guestY - patron2.getBoundingClientRect().top;
-   console.log('patronX:', patronX)
-   console.log('patronY:', patronY)
-   // Створюємо зміну в яку вкладаємо ціле число 
-   let patXst = parseInt(patron2.style.left)
-   let patYst = parseInt(patron2.style.top);
-   console.log('patXst:', patXst)
-   console.log('patYst:', patYst)
-   // Створюємо умови завдяки яким ми ділемо картинку на 4 частини
-   if ((patronX < 100) && (patronY < 100)) {
-      guestX = patYst - step
-      guestY = patXst - step
-      console.log('Верхній лівий кут')
-   }
-   if ((patronX > 100) && (patronY > 100)) {
-      guestX = patYst + step
-      guestY = patXst + step
-      console.log('Нижній правий кут')
-   }
-   if ((patronX > 100) && (patronY < 100)) {
-      guestX = patYst - step
-      guestY = patXst + step
-      console.log('Верхній правий кут')
-   }
-   if ((patronX < 100) && (patronY > 100)) {
-      guestX = patYst + step
-      guestY = patXst - step
-      console.log('Нижній лівий кут')
-   }
-   // Створюємо зміну в яку вкладаємо результат розрахунку умов
-   patronTop2 = guestX
-   patronLeft2 = guestY
-   // Визначаємо поточну координату собаки
-   patron2.style.top = guestX + 'px'
-   patron2.style.left = guestY + 'px'
-
-})
-
-// Початкова координата Третього патрона
-let patronTop3 = 205
-let patronLeft3 = 805
-//Створюємо зміну в яку вкладаємо результат розрахунку координат кліку на малюнку
-patron3.style.top = patronTop3 + 'px'
-patron3.style.left = patronLeft3 + 'px'
-// ---------------------------
-
-// Створюємо клік на третього патрона
-patron3.addEventListener('click', (ev) => {
-   let guestX = ev.pageX
-   let guestY = ev.pageY
-   //Створюємо зміну в яку вкладаємо результат розрахунку координат кліку на малюнку
-   let patronX = guestX - patron3.getBoundingClientRect().left;
-   let patronY = guestY - patron3.getBoundingClientRect().top;
-   console.log('patronX:', patronX)
-   console.log('patronY:', patronY)
-   // Створюємо зміну в яку вкладаємо ціле число 
-   let patXst = parseInt(patron3.style.left)
-   let patYst = parseInt(patron3.style.top);
-   console.log('patXst:', patXst)
-   console.log('patYst:', patYst)
-   // Створюємо умови завдяки яким ми ділемо картинку на 4 частини
-   if ((patronX < 100) && (patronY < 100)) {
-      guestX = patYst - step
-      guestY = patXst - step
-      console.log('Верхній лівий кут')
-   }
-   if ((patronX > 100) && (patronY > 100)) {
-      guestX = patYst + step
-      guestY = patXst + step
-      console.log('Нижній правий кут')
-   }
-   if ((patronX > 100) && (patronY < 100)) {
-      guestX = patYst - step
-      guestY = patXst + step
-      console.log('Верхній правий кут')
-   }
-   if ((patronX < 100) && (patronY > 100)) {
-      guestX = patYst + step
-      guestY = patXst - step
-      console.log('Нижній лівий кут')
-   }
-   // Створюємо зміну в яку вкладаємо результат розрахунку умов
-   patronTop3 = guestX
-   patronLeft3 = guestY
-   // Визначаємо поточну координату собаки
-   patron3.style.top = guestX + 'px'
-   patron3.style.left = guestY + 'px'
-
-})
-
 
